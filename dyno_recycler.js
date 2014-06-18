@@ -3,9 +3,7 @@ var logs = require('https')
   , admin = require('https')
   , _ = require('underscore')
   , url  = require('url')
-  , request = require('request')
-  , memjs = require('memjs')
-  , memcachedClient = memjs.Client.create();
+  , request = require('request');
 
 var APP_ID = process.env.RECYCLER_APP_ID
   , LOGENTRIES_KEY = process.env.RECYCLER_KEY
@@ -122,46 +120,38 @@ var recycler=function(timeoutAllowed, keyWords, ignore) {
         // Only restart the dyno when it has multiple time-out occurred in last 30 minutes
         if ((v >= timeoutAllowed) && (appDynoRestarted == false)) {
           console.log('Dyno %s going to be restarted.', k);
-          memcachedClient.get('###'+k, function(error, value) {
-            if (value)
-              console.log('TimeDiff: %s', ((new Date().getTime())-value.toString()));
-            if ((value==null) || (((new Date().getTime())-value.toString()) > (600000*3))) {
-              var DYNO_ID = k;
+          var DYNO_ID = k;
 
-              var headers = {
-                  'Accept': 'application/vnd.heroku+json; version=3',
-                  'Authorization': 'Bearer ' + HEROKU_TOKEN
-                }
-                , serverOptions = {
-                  host:'api.heroku.com',
-                  port:443,
-                  path:'/apps/'+ APP_ID +'/dynos/'+DYNO_ID,
-                  method: 'DELETE',
-                  headers: headers
-                }
-                , request = admin.request(serverOptions);
-
-              request.on('response', function (response) {
-                var response_body = '';
-                response.setEncoding('utf-8');
-                response.on('data', function (chunk) {
-                  response_body += chunk;
-                });
-                response.on('end', function () {
-                  console.log('Dyno %s restart completed with value [%s].', DYNO_ID, response_body);
-                  alertHipChat('Dyno '+DYNO_ID+' restart completed on '+APP_ID+' for ['+keyWords+']');
-                  memcachedClient.set('###'+k, (new Date().getTime()));
-                });
-              });
-              request.on('error', function(e) {
-                console.error('Error: %s',e);
-                alertHipChat('Error: '+e+' on '+APP_ID+' for ['+keyWords+']');
-                process.exit(3);
-              });
-              request.end();
-            } else {
-              console.log('Dyno %s has already been restarted in last 30 minutes.', k);
+          var headers = {
+              'Accept': 'application/vnd.heroku+json; version=3',
+              'Authorization': 'Bearer ' + HEROKU_TOKEN
             }
+            , serverOptions = {
+              host:'api.heroku.com',
+              port:443,
+              path:'/apps/'+ APP_ID +'/dynos/'+DYNO_ID,
+              method: 'DELETE',
+              headers: headers
+            }
+            , request = admin.request(serverOptions);
+
+          request.on('response', function (response) {
+            var response_body = '';
+            response.setEncoding('utf-8');
+            response.on('data', function (chunk) {
+              response_body += chunk;
+            });
+            response.on('end', function () {
+              console.log('Dyno %s restart completed with value [%s].', DYNO_ID, response_body);
+              alertHipChat('Dyno '+DYNO_ID+' restart completed on '+APP_ID+' for ['+keyWords+']');
+            });
+          });
+          request.on('error', function(e) {
+            console.error('Error: %s',e);
+            alertHipChat('Error: '+e+' on '+APP_ID+' for ['+keyWords+']');
+            process.exit(3);
+          });
+          request.end();
           });
         }
       });
@@ -176,6 +166,7 @@ var recycler=function(timeoutAllowed, keyWords, ignore) {
     alertHipChat('Error: '+e+' on '+APP_ID+' for ['+keyWords+']');
     process.exit(2);
   });
+
 };
 
 recycler(2, 'Error%20R14');  // Error R14 (Memory quota exceeded)
