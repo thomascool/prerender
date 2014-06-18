@@ -152,7 +152,6 @@ var recycler=function(timeoutAllowed, keyWords, ignore) {
             process.exit(3);
           });
           request.end();
-          });
         }
       });
     });
