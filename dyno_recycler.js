@@ -12,7 +12,8 @@ var APP_ID = process.env.RECYCLER_APP_ID
 
 
 var alertHipChat = function(msg) {
-  request.post('https://api.hipchat.com/v1/rooms/message?auth_token=73c44ad21d8ef7febda81e33adcda0&room_id=116219&from=Recycler&message=@thomas%20'+escape(msg) );
+  console.log(msg);
+//  request.post('https://api.hipchat.com/v1/rooms/message?auth_token=73c44ad21d8ef7febda81e33adcda0&room_id=116219&from=Recycler&message=@thomas%20'+escape(msg) );
 }
 
 var restart_prerender = _.once(function(){
