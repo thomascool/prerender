@@ -12,7 +12,11 @@
     "cache-manager": "0.2.0",
     "aws-sdk": "~1.13.0",
     "phantom": "~0.5.7",
-    "phantomjs": "~1.9.7-1"
+    "phantomjs": "~1.9.7-1",
+    "underscore": "~1.6.0",
+    "url": "~0.10.1",
+    "request": "~2.36.0",
+    "memjs": "~0.8.4"
   },
   "bin": {
     "prerender": "server.js"
