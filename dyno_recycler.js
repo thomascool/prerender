@@ -170,4 +170,4 @@ var recycler=function(timeoutAllowed, keyWords, ignore) {
 };
 
 recycler(2, 'Error%20R14');  // Error R14 (Memory quota exceeded)
-recycler(3, 'H12', 'path=/utils/bitly/shorten');  // error code=H12 desc="Request timeout"
+recycler(4, 'H12', 'path=/utils/bitly/shorten');  // error code=H12 desc="Request timeout"
